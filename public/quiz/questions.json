@@ -94,7 +94,7 @@
       ]
     },
     {
-      "question": "Exercise 2 (Part A): How does using `count` affect resource creation?",
+      "question": "How does using `count` affect resource creation?",
       "options": [
         {
           "text": "Creates configuration copies without actual resource instances.",
@@ -117,7 +117,7 @@
       ]
     },
     {
-      "question": "Exercise 4 (Part A): Explain what the following Terraform code does.",
+      "question": "Explain what the following Terraform code does.",
       "snippet": "resource \"aws_security_group\" \"app_sg\" {\n  name        = \"app_sg\"\n  description = \"Security group for the application\"\n\n  dynamic \"ingress\" {\n    for_each = var.ingress_rules\n    content {\n      from_port   = ingress.value.from_port\n      to_port     = ingress.value.to_port\n      protocol    = ingress.value.protocol\n      cidr_blocks = ingress.value.cidr_blocks\n    }\n  }\n}",
       "options": [
         {
@@ -141,7 +141,7 @@
       ]
     },
     {
-      "question": "Exercise 4 (Part B): What would be the content of `var.ingress_rules`? Provide an example.",
+      "question": "What would be the content of `var.ingress_rules`? Provide an example.",
       "options": [
         {
           "text": "An example value would be:",
@@ -164,31 +164,7 @@
       ]
     },
     {
-      "question": "Exercise 5: Review this backend configuration snippet. What additional settings might you add for robust state management?",
-      "snippet": "terraform {\n  backend \"s3\" {\n    bucket = \"my-terraform-state\"\n    key    = \"state.tfstate\"\n    region = \"us-west-2\"\n  }\n}",
-      "options": [
-        {
-          "text": "No changes are needed; this basic configuration is sufficient for all team scenarios.",
-          "snippet": "",
-          "correct": false,
-          "explanation": "Incorrect – For team use, additional measures are advisable."
-        },
-        {
-          "text": "Enhance the configuration by adding a DynamoDB table for state locking, enabling encryption on the S3 bucket, and turning on versioning to ensure robust backup and conflict prevention.",
-          "snippet": "",
-          "correct": true,
-          "explanation": ""
-        },
-        {
-          "text": "Simply adjust the region and key values to better organize your state files, leaving locking and encryption to be managed manually.",
-          "snippet": "",
-          "correct": false,
-          "explanation": "Incorrect – This does not address state locking or security best practices."
-        }
-      ]
-    },
-    {
-      "question": "Exercise 6: Provide an example of how you would parameterize an Auto Scaling group in Terraform to optimize costs during low traffic periods. Outline key variables and configuration blocks you'd consider.",
+      "question": "Select the correct option. An example of how you would parameterize an Auto Scaling group in Terraform to optimize costs during low traffic periods. Outline key variables and configuration blocks you'd consider.",
       "options": [
         {
           "text": "Set fixed capacity values with no scaling policies. While simple, this approach doesn't adjust to traffic fluctuations and isn't cost-effective.",
@@ -203,7 +179,7 @@
           "explanation": "Incorrect – This sacrifices availability and cost optimization."
         },
         {
-          "text": "Define variables such as `desired_capacity`, `min_size`, and `max_size`, and configure scheduled scaling policies that lower the desired capacity during off-peak hours while scaling up during high-demand periods. This dynamic approach ensures efficient resource usage and cost optimization.",
+          "text": "Define variables such as `desired_capacity`, `min_size`, and `max_size`, and configure scheduled scaling policies that lower the desired capacity during off-peak hours while scaling up during high-demand periods.",
           "snippet": "",
           "correct": true,
           "explanation": ""
@@ -211,7 +187,7 @@
       ]
     },
     {
-      "question": "Exercise 7: Given the error snippet below, what steps would you take to diagnose and resolve the issue?",
+      "question": "Given the error snippet below, what steps would you take to diagnose and resolve the issue?",
       "snippet": "Error launching source instance: UnauthorizedOperation: You are not authorized to perform this operation.",
       "options": [
         {
@@ -235,7 +211,7 @@
       ]
     },
     {
-      "question": "ECS Service Configuration: You need to create an ECS service that runs on Fargate. The service must be attached to an existing ECS cluster and use a given task definition. It also requires the proper network configuration (i.e., subnets, security groups, and public IP assignment). Which snippet is correct?",
+      "question": "You need to create an ECS service that runs on Fargate. The service must be attached to an existing ECS cluster and use a given task definition. It also requires the proper network configuration (i.e., subnets, security groups, and public IP assignment). Which snippet is correct?",
       "options": [
         {
           "text": "",

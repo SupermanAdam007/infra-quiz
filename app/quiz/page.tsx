@@ -288,9 +288,16 @@ export default function TerraformQuiz() {
         <CardHeader className="border-b border-gray-800 py-3">
           <div className="flex justify-between items-center">
             <CardTitle className="text-xl font-bold text-blue-400">Terraform Quiz</CardTitle>
-            <Button onClick={handleReset} variant="outline" size="sm" className="bg-gray-800 hover:bg-gray-700">
-              <RotateCcw className="h-3 w-3 mr-1" /> Reset
-            </Button>
+            <div className="flex space-x-2">
+              {allAnswered && (
+                <Button onClick={() => setQuizCompleted(true)} variant="outline" size="sm" className="bg-gray-800 hover:bg-gray-700">
+                  <ChevronLeft className="h-3 w-3 mr-1" /> Results
+                </Button>
+              )}
+              <Button onClick={handleReset} variant="outline" size="sm" className="bg-gray-800 hover:bg-gray-700">
+                <RotateCcw className="h-3 w-3 mr-1" /> Reset
+              </Button>
+            </div>
           </div>
           <CardDescription className="text-xs text-gray-400">
             Test your Terraform and AWS infrastructure knowledge

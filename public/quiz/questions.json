@@ -119,6 +119,7 @@
     },
     {
       "question": "What would be the content of `var.ingress_rules`? Provide an example.",
+      "snippet": "resource \"aws_security_group\" \"app_sg\" {\n  name        = \"app_sg\"\n  description = \"Security group for the application\"\n\n  dynamic \"ingress\" {\n    for_each = var.ingress_rules\n    content {\n      from_port   = ingress.value.from_port\n      to_port     = ingress.value.to_port\n      protocol    = ingress.value.protocol\n      cidr_blocks = ingress.value.cidr_blocks\n    }\n  }\n}",
       "options": [
         {
           "text": "An example value would be:",

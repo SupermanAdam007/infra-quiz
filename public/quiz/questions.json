@@ -1,0 +1,421 @@
+{
+  "questions": [
+    {
+      "question": "What is the correct way to define a variable in Terraform?",
+      "options": [
+        {
+          "text": "Using the 'variable' block",
+          "snippet": "variable \"instance_type\" {\n  type    = string\n  default = \"t2.micro\"\n}",
+          "correct": true,
+          "explanation": "This is the correct way to define a variable in Terraform. The 'variable' block allows you to specify the type and optionally provide a default value."
+        },
+        {
+          "text": "Using a simple assignment",
+          "snippet": "instance_type = \"t2.micro\"",
+          "correct": false,
+          "explanation": "This is incorrect. Simple assignments are used for local values, not for defining variables."
+        },
+        {
+          "text": "Using the 'var' keyword",
+          "snippet": "var instance_type = \"t2.micro\"",
+          "correct": false,
+          "explanation": "This is incorrect. The 'var' keyword is used to reference variables, not to define them."
+        }
+      ]
+    },
+    {
+      "question": "How do you reference a variable in a Terraform configuration?",
+      "options": [
+        {
+          "text": "Using var.variable_name",
+          "snippet": "resource \"aws_instance\" \"example\" {\n  instance_type = var.instance_type\n}",
+          "correct": true,
+          "explanation": "This is correct. Variables are referenced using the 'var.' prefix followed by the variable name."
+        },
+        {
+          "text": "Using ${variable_name}",
+          "snippet": "resource \"aws_instance\" \"example\" {\n  instance_type = ${instance_type}\n}",
+          "correct": false,
+          "explanation": "This is incorrect. This syntax is not valid in Terraform."
+        },
+        {
+          "text": "Using variable.name",
+          "snippet": "resource \"aws_instance\" \"example\" {\n  instance_type = variable.instance_type\n}",
+          "correct": false,
+          "explanation": "This is incorrect. 'variable.' is not the correct prefix for referencing variables."
+        }
+      ]
+    },
+    {
+      "question": "Explain what a Terraform provider is and how you configure it for AWS.",
+      "options": [
+        {
+          "text": "A Terraform provider is a built‐in module that stores state remotely on AWS S3 and manages your variables.",
+          "snippet": "",
+          "correct": false,
+          "explanation": "Incorrect – This confuses providers with state backends."
+        },
+        {
+          "text": "A Terraform provider is a plugin that enables Terraform to interact with a service's API. For AWS, you configure it in a provider block—specifying parameters such as the region and credentials.",
+          "snippet": "",
+          "correct": true,
+          "explanation": ""
+        },
+        {
+          "text": "A Terraform provider is a command-line utility that you run separately to deploy resources, rather than integrating with Terraform's configuration.",
+          "snippet": "",
+          "correct": false,
+          "explanation": "Incorrect – This mischaracterizes how providers work."
+        }
+      ]
+    },
+    {
+      "question": "Exercise 1: Given the snippet below, identify any issues and explain what each block does. Also, describe how you would modify it to support multiple regions using workspaces.",
+      "snippet": "provider \"aws\" {\n  region = var.aws_region\n}\n\nresource \"aws_instance\" \"web\" {\n  ami           = var.ami_id\n  instance_type = \"t2.micro\"\n  tags = {\n    Name = \"WebServer\"\n  }\n}",
+      "options": [
+        {
+          "text": "The snippet is valid and uses a variable for the region; however, it doesn't address multi-region support. You'd need to duplicate resource blocks for each region.",
+          "snippet": "",
+          "correct": false,
+          "explanation": "Incorrect – Duplication is not best practice when workspaces can be used."
+        },
+        {
+          "text": "The snippet should include a `profile` attribute to set credentials for each region, hardcoding the region value per workspace.",
+          "snippet": "",
+          "correct": false,
+          "explanation": "Incorrect – Hardcoding contradicts the use of variables and workspaces."
+        },
+        {
+          "text": "The snippet is valid: the provider block sets the AWS region using a variable, and the resource block creates an EC2 instance with the given AMI and type. To support multiple regions, you can leverage Terraform workspaces (or variable overrides) so that each workspace provides a different value for `var.aws_region` without changing the code.",
+          "snippet": "",
+          "correct": true,
+          "explanation": ""
+        }
+      ]
+    },
+    {
+      "question": "How do variables and outputs facilitate Terraform configurations in multi-environment setups? What are some best practices for managing Terraform state securely in a team setting?",
+      "options": [
+        {
+          "text": "Variables let you parameterize configurations for different environments, and outputs can pass information between modules. However, it's best to manage state using local files since they're simpler in a team setting.",
+          "snippet": "",
+          "correct": false,
+          "explanation": "Incorrect – Local state files are risky in collaborative environments."
+        },
+        {
+          "text": "Variables allow you to tailor configurations per environment, and outputs export computed values for use in other modules. For secure state management in teams, using remote backends with locking (e.g., S3 with DynamoDB) is the best practice.",
+          "snippet": "",
+          "correct": true,
+          "explanation": ""
+        },
+        {
+          "text": "Variables are used to hardcode configuration values, and outputs store secrets to be manually shared between environments; state should ideally be stored in a Git repository.",
+          "snippet": "",
+          "correct": false,
+          "explanation": "Incorrect – Hardcoding and storing state in Git are both discouraged."
+        }
+      ]
+    },
+    {
+      "question": "Exercise 2 (Part A): How does using `count` affect resource creation?",
+      "options": [
+        {
+          "text": "Using `count` duplicates the configuration but does not actually create multiple instances.",
+          "snippet": "",
+          "correct": false,
+          "explanation": "Incorrect – It does create the specified number of instances."
+        },
+        {
+          "text": "Using `count` creates multiple instances based on the value of `instance_count`, resulting in a list of resource objects.",
+          "snippet": "",
+          "correct": true,
+          "explanation": ""
+        },
+        {
+          "text": "Using `count` always creates a single resource regardless of the variable's value.",
+          "snippet": "",
+          "correct": false,
+          "explanation": "Incorrect – That contradicts the purpose of `count`."
+        }
+      ]
+    },
+    {
+      "question": "Exercise 2 (Part B): What improvements or changes might you suggest for production use, especially regarding state locking and remote state storage?",
+      "options": [
+        {
+          "text": "Keep state files on local disks for faster access.",
+          "snippet": "",
+          "correct": false,
+          "explanation": "Incorrect – Local state can lead to conflicts in team environments."
+        },
+        {
+          "text": "Avoid using variables for state management and hardcode the state file's path to reduce errors.",
+          "snippet": "",
+          "correct": false,
+          "explanation": "Incorrect – Hardcoding state paths is inflexible and error-prone."
+        },
+        {
+          "text": "Use remote backends (such as S3 with DynamoDB for state locking) to securely manage state and prevent concurrent modifications in a collaborative team setting.",
+          "snippet": "",
+          "correct": true,
+          "explanation": ""
+        }
+      ]
+    },
+    {
+      "question": "Exercise 3: Outline a basic module structure for a common infrastructure component (e.g., a VPC with subnets, route tables, and NAT gateways) and explain how you would version and reuse it.",
+      "options": [
+        {
+          "text": "A module can be a single file that contains all resource definitions; no folder structure or versioning is needed if you keep your configurations simple.",
+          "snippet": "",
+          "correct": false,
+          "explanation": "Incorrect – Modularity and versioning improve reusability and maintainability."
+        },
+        {
+          "text": "A module should be organized in its own directory with separate files—such as `main.tf` for resources, `variables.tf` for inputs, and `outputs.tf` for outputs. You can version the module using your version control system (e.g., tagging releases) and reference it via a source URL with a version tag.",
+          "snippet": "",
+          "correct": true,
+          "explanation": ""
+        },
+        {
+          "text": "A module should contain only outputs, with all resource definitions maintained in the root configuration; versioning is unnecessary because modules are inherently static.",
+          "snippet": "",
+          "correct": false,
+          "explanation": "Incorrect – This approach does not leverage modular design or proper version control."
+        }
+      ]
+    },
+    {
+      "question": "Discuss the role of dynamic blocks in Terraform. How do they improve code reusability and readability?",
+      "options": [
+        {
+          "text": "Dynamic blocks are merely a shortcut to copy and paste static configuration blocks and offer little flexibility in handling complex inputs.",
+          "snippet": "",
+          "correct": false,
+          "explanation": "Incorrect – They provide significant benefits in dynamic configuration."
+        },
+        {
+          "text": "Dynamic blocks allow you to generate nested configuration blocks dynamically based on variable input. This approach reduces duplication and improves maintainability by handling a variable number of similar configuration blocks without writing them out manually.",
+          "snippet": "",
+          "correct": true,
+          "explanation": ""
+        },
+        {
+          "text": "Dynamic blocks automatically adjust resource configurations in response to provider updates, eliminating the need for manual modifications when APIs change.",
+          "snippet": "",
+          "correct": false,
+          "explanation": "Incorrect – They don't automatically adapt to provider changes."
+        }
+      ]
+    },
+    {
+      "question": "Exercise 4 (Part A): Explain what the following Terraform code does.",
+      "snippet": "resource \"aws_security_group\" \"app_sg\" {\n  name        = \"app_sg\"\n  description = \"Security group for the application\"\n\n  dynamic \"ingress\" {\n    for_each = var.ingress_rules\n    content {\n      from_port   = ingress.value.from_port\n      to_port     = ingress.value.to_port\n      protocol    = ingress.value.protocol\n      cidr_blocks = ingress.value.cidr_blocks\n    }\n  }\n}",
+      "options": [
+        {
+          "text": "It statically defines a single ingress rule and ignores the `var.ingress_rules` variable.",
+          "snippet": "",
+          "correct": false,
+          "explanation": "Incorrect – The use of dynamic indicates multiple rules are intended."
+        },
+        {
+          "text": "It uses a loop to create multiple security groups—one for each item in `var.ingress_rules`.",
+          "snippet": "",
+          "correct": false,
+          "explanation": "Incorrect – It creates multiple ingress rules, not security groups."
+        },
+        {
+          "text": "It dynamically creates multiple ingress rules for the security group based on the items provided in `var.ingress_rules`.",
+          "snippet": "",
+          "correct": true,
+          "explanation": ""
+        }
+      ]
+    },
+    {
+      "question": "Exercise 4 (Part B): What would be the content of `var.ingress_rules`? Provide an example.",
+      "options": [
+        {
+          "text": "An example value would be:",
+          "snippet": "ingress_rules = [\n  { from_port = 80, to_port = 80, protocol = \"tcp\", cidr_blocks = [\"0.0.0.0/0\"] },\n  { from_port = 443, to_port = 443, protocol = \"tcp\", cidr_blocks = [\"0.0.0.0/0\"] }\n]",
+          "correct": true,
+          "explanation": ""
+        },
+        {
+          "text": "An example value would be:",
+          "snippet": "ingress_rules = {\n  port = 80,\n  protocol = \"tcp\"\n}",
+          "correct": false,
+          "explanation": "Incorrect – The structure does not match the expected list of objects."
+        },
+        {
+          "text": "An example value would be:",
+          "snippet": "ingress_rules = \"80,443\"",
+          "correct": false,
+          "explanation": "Incorrect – A string does not provide the necessary details."
+        }
+      ]
+    },
+    {
+      "question": "Exercise 5: Review this backend configuration snippet. What additional settings might you add for robust state management?",
+      "snippet": "terraform {\n  backend \"s3\" {\n    bucket = \"my-terraform-state\"\n    key    = \"state.tfstate\"\n    region = \"us-west-2\"\n  }\n}",
+      "options": [
+        {
+          "text": "No changes are needed; this basic configuration is sufficient for all team scenarios.",
+          "snippet": "",
+          "correct": false,
+          "explanation": "Incorrect – For team use, additional measures are advisable."
+        },
+        {
+          "text": "Enhance the configuration by adding a DynamoDB table for state locking, enabling encryption on the S3 bucket, and turning on versioning to ensure robust backup and conflict prevention.",
+          "snippet": "",
+          "correct": true,
+          "explanation": ""
+        },
+        {
+          "text": "Simply adjust the region and key values to better organize your state files, leaving locking and encryption to be managed manually.",
+          "snippet": "",
+          "correct": false,
+          "explanation": "Incorrect – This does not address state locking or security best practices."
+        }
+      ]
+    },
+    {
+      "question": "Exercise 6: Provide an example of how you would parameterize an Auto Scaling group in Terraform to optimize costs during low traffic periods. Outline key variables and configuration blocks you'd consider.",
+      "options": [
+        {
+          "text": "Set fixed capacity values with no scaling policies. While simple, this approach doesn't adjust to traffic fluctuations and isn't cost-effective.",
+          "snippet": "",
+          "correct": false,
+          "explanation": "Incorrect – It fails to optimize costs during low traffic."
+        },
+        {
+          "text": "Remove the Auto Scaling group entirely and rely on a single on-demand instance, as scaling adds unnecessary complexity.",
+          "snippet": "",
+          "correct": false,
+          "explanation": "Incorrect – This sacrifices availability and cost optimization."
+        },
+        {
+          "text": "Define variables such as `desired_capacity`, `min_size`, and `max_size`, and configure scheduled scaling policies that lower the desired capacity during off-peak hours while scaling up during high-demand periods. This dynamic approach ensures efficient resource usage and cost optimization.",
+          "snippet": "",
+          "correct": true,
+          "explanation": ""
+        }
+      ]
+    },
+    {
+      "question": "Exercise 7: Given the error snippet below, what steps would you take to diagnose and resolve the issue?\n\n```\nError: Error launching source instance: UnauthorizedOperation: You are not authorized to perform this operation.\n```",
+      "options": [
+        {
+          "text": "Restart the AWS instance and try running Terraform again, hoping the issue resolves itself.",
+          "snippet": "",
+          "correct": false,
+          "explanation": "Incorrect – This bypasses proper diagnosis."
+        },
+        {
+          "text": "Disable error checking in Terraform to bypass the error message and force deployment.",
+          "snippet": "",
+          "correct": false,
+          "explanation": "Incorrect – This is unsafe and does not resolve the underlying issue."
+        },
+        {
+          "text": "Review the error details to verify that the AWS credentials used by Terraform have the correct IAM permissions. Check the attached policies and adjust them to grant the necessary actions.",
+          "snippet": "",
+          "correct": true,
+          "explanation": ""
+        }
+      ]
+    },
+    {
+      "question": "ECS Service Configuration: You need to create an ECS service that runs on Fargate. The service must be attached to an existing ECS cluster and use a given task definition. It also requires the proper network configuration (i.e., subnets, security groups, and public IP assignment). Which snippet is correct?",
+      "options": [
+        {
+          "text": "",
+          "snippet": "resource \"aws_ecs_service\" \"service\" {\n  name            = \"my-ecs-service\"\n  cluster         = aws_ecs_cluster.cluster.id\n  task_definition = aws_ecs_task_definition.task.arn\n  desired_count   = 2\n  launch_type     = \"FARGATE\"\n\n  network_configuration {\n    subnets         = var.subnets\n    security_groups = var.security_groups\n    assign_public_ip = true\n  }\n}",
+          "correct": true,
+          "explanation": "This snippet correctly references the ECS cluster's ID and the task definition's ARN, sets the launch type to FARGATE, and includes a complete network configuration block."
+        },
+        {
+          "text": "",
+          "snippet": "resource \"aws_ecs_service\" \"service\" {\n  name            = \"my-ecs-service\"\n  cluster         = aws_ecs_cluster.cluster.name\n  task_definition = aws_ecs_task_definition.task.id\n  desired_count   = 2\n  launch_type     = \"FARGATE\"\n}",
+          "correct": false,
+          "explanation": "Incorrect – References the cluster by name instead of ID, uses the task definition's ID rather than its ARN, and omits the required network configuration."
+        },
+        {
+          "text": "",
+          "snippet": "resource \"aws_ecs_service\" \"service\" {\n  name            = \"my-ecs-service\"\n  cluster         = aws_ecs_cluster.cluster.id\n  task_definition = aws_ecs_task_definition.task.arn\n  desired_count   = 2\n  launch_type     = \"EC2\"\n\n  network_configuration {\n    subnets         = var.subnets\n    security_groups = var.security_groups\n    assign_public_ip = false\n  }\n}",
+          "correct": false,
+          "explanation": "Incorrect – Uses the EC2 launch type instead of FARGATE and sets assign_public_ip to false."
+        }
+      ]
+    },
+    {
+      "question": "ECS Task Definition for a Fargate Container: You need to define an ECS task definition for a containerized application to run on Fargate. The task must specify a container definition with an image, CPU, memory settings, and a port mapping. Which snippet is correct?",
+      "options": [
+        {
+          "text": "",
+          "snippet": "resource \"aws_ecs_task_definition\" \"task\" {\n  family                   = \"my-task\"\n  network_mode             = \"awsvpc\"\n  requires_compatibilities = [\"FARGATE\"]\n  cpu                      = \"256\"\n  memory                   = \"512\"\n\n  container_definitions = jsonencode([\n    {\n      name      = \"app\"\n      image     = var.image\n      cpu       = 256\n      memory    = 512\n      essential = true\n      portMappings = [\n        {\n          containerPort = 80,\n          hostPort      = 80,\n          protocol      = \"tcp\"\n        }\n      ]\n    }\n  ])\n}",
+          "correct": true,
+          "explanation": "This snippet correctly uses awsvpc network mode with FARGATE compatibility, and aligns the CPU/memory settings and port mapping."
+        },
+        {
+          "text": "",
+          "snippet": "resource \"aws_ecs_task_definition\" \"task\" {\n  family                   = \"my-task\"\n  network_mode             = \"bridge\"\n  requires_compatibilities = [\"EC2\"]\n  cpu                      = \"256\"\n  memory                   = \"512\"\n\n  container_definitions = jsonencode([\n    {\n      name      = \"app\"\n      image     = var.image\n      portMappings = [\n        {\n          containerPort = 80,\n          protocol      = \"tcp\"\n        }\n      ]\n    }\n  ])\n}",
+          "correct": false,
+          "explanation": "Incorrect – Uses bridge network mode and is configured for EC2 instead of Fargate."
+        },
+        {
+          "text": "",
+          "snippet": "resource \"aws_ecs_task_definition\" \"task\" {\n  family                   = \"my-task\"\n  network_mode             = \"awsvpc\"\n  requires_compatibilities = [\"FARGATE\"]\n  cpu                      = \"512\"\n  memory                   = \"1024\"\n\n  container_definitions = jsonencode([\n    {\n      name      = \"app\"\n      image     = var.image\n      cpu       = 256\n      memoryReservation = 512\n      essential = true\n      portMappings = [\n        {\n          containerPort = 8080,\n          hostPort      = 8080,\n          protocol      = \"tcp\"\n        }\n      ]\n    }\n  ])\n}",
+          "correct": false,
+          "explanation": "Incorrect – Inconsistent CPU/memory values and an unexpected port mapping."
+        }
+      ]
+    },
+    {
+      "question": "VPC with Public/Private Subnets and NAT Gateway: You need to create a VPC that includes both a public subnet (with an Internet Gateway) and a private subnet (routed through a NAT Gateway). Which Terraform configuration snippet is correct?",
+      "options": [
+        {
+          "text": "",
+          "snippet": "resource \"aws_vpc\" \"main\" {\n  cidr_block = \"10.0.0.0/16\"\n}\n\nresource \"aws_internet_gateway\" \"igw\" {\n  vpc_id = aws_vpc.main.id\n}\n\nresource \"aws_subnet\" \"public\" {\n  vpc_id                  = aws_vpc.main.id\n  cidr_block              = \"10.0.1.0/24\"\n  map_public_ip_on_launch = true\n}\n\nresource \"aws_subnet\" \"private\" {\n  vpc_id     = aws_vpc.main.id\n  cidr_block = \"10.0.2.0/24\"\n}\n\nresource \"aws_eip\" \"nat\" {\n  vpc = true\n}\n\nresource \"aws_nat_gateway\" \"nat\" {\n  allocation_id = aws_eip.nat.id\n  subnet_id     = aws_subnet.public.id\n}\n\nresource \"aws_route_table\" \"public_rt\" {\n  vpc_id = aws_vpc.main.id\n\n  route {\n    cidr_block = \"0.0.0.0/0\"\n    gateway_id = aws_internet_gateway.igw.id\n  }\n}\n\nresource \"aws_route_table_association\" \"public_assoc\" {\n  subnet_id      = aws_subnet.public.id\n  route_table_id = aws_route_table.public_rt.id\n}\n\nresource \"aws_route_table\" \"private_rt\" {\n  vpc_id = aws_vpc.main.id\n\n  route {\n    cidr_block    = \"0.0.0.0/0\"\n    nat_gateway_id = aws_nat_gateway.nat.id\n  }\n}\n\nresource \"aws_route_table_association\" \"private_assoc\" {\n  subnet_id      = aws_subnet.private.id\n  route_table_id = aws_route_table.private_rt.id\n}",
+          "correct": true,
+          "explanation": "This snippet creates a VPC with an Internet Gateway, a public subnet (with automatic public IP assignment), a private subnet, and correct route table associations for both subnets."
+        },
+        {
+          "text": "",
+          "snippet": "resource \"aws_vpc\" \"main\" {\n  cidr_block = \"10.0.0.0/16\"\n}\n\nresource \"aws_internet_gateway\" \"igw\" {\n  vpc_id = aws_vpc.main.id\n}\n\nresource \"aws_subnet\" \"public\" {\n  vpc_id     = aws_vpc.main.id\n  cidr_block = \"10.0.1.0/24\"\n}\n\nresource \"aws_subnet\" \"private\" {\n  vpc_id     = aws_vpc.main.id\n  cidr_block = \"10.0.2.0/24\"\n}\n\nresource \"aws_eip\" \"nat\" {\n  vpc = true\n}\n\nresource \"aws_nat_gateway\" \"nat\" {\n  allocation_id = aws_eip.nat.id\n  subnet_id     = aws_subnet.private.id\n}\n\nresource \"aws_route_table\" \"public_rt\" {\n  vpc_id = aws_vpc.main.id\n\n  route {\n    cidr_block    = \"0.0.0.0/0\"\n    nat_gateway_id = aws_nat_gateway.nat.id\n  }\n}\n\nresource \"aws_route_table_association\" \"public_assoc\" {\n  subnet_id      = aws_subnet.public.id\n  route_table_id = aws_route_table.public_rt.id\n}",
+          "correct": false,
+          "explanation": "Incorrect – The NAT Gateway is assigned to the private subnet and used in the public route table, causing misrouted traffic."
+        },
+        {
+          "text": "",
+          "snippet": "resource \"aws_vpc\" \"main\" {\n  cidr_block = \"10.0.0.0/16\"\n}\n\nresource \"aws_internet_gateway\" \"igw\" {\n  vpc_id = aws_vpc.main.id\n}\n\nresource \"aws_subnet\" \"public\" {\n  vpc_id                  = aws_vpc.main.id\n  cidr_block              = \"10.0.1.0/24\"\n  map_public_ip_on_launch = true\n}\n\nresource \"aws_subnet\" \"private\" {\n  vpc_id     = aws_vpc.main.id\n  cidr_block = \"10.0.2.0/24\"\n}\n\nresource \"aws_eip\" \"nat\" {\n  vpc = true\n}\n\nresource \"aws_nat_gateway\" \"nat\" {\n  allocation_id = aws_eip.nat.id\n  subnet_id     = aws_subnet.public.id\n}\n\nresource \"aws_route_table\" \"public_rt\" {\n  vpc_id = aws_vpc.main.id\n\n  route {\n    cidr_block = \"0.0.0.0/0\"\n    gateway_id = aws_internet_gateway.igw.id\n  }\n}\n\nresource \"aws_route_table_association\" \"public_assoc\" {\n  subnet_id      = aws_subnet.public.id\n  route_table_id = aws_route_table.public_rt.id\n}",
+          "correct": false,
+          "explanation": "Incorrect – Omits the private subnet's route table and association, leaving it without proper Internet access via the NAT Gateway."
+        }
+      ]
+    },
+    {
+      "question": "Security Group for a Web Application: You need to create a security group that allows inbound HTTP (port 80) and HTTPS (port 443) traffic from anywhere, and permits all outbound traffic. Which Terraform configuration snippet is correct?",
+      "options": [
+        {
+          "text": "",
+          "snippet": "resource \"aws_security_group\" \"web_sg\" {\n  name        = \"web_sg\"\n  description = \"Allow HTTP and HTTPS inbound\"\n  vpc_id      = var.vpc_id\n\n  ingress {\n    from_port   = 80\n    to_port     = 80\n    protocol    = \"tcp\"\n    cidr_blocks = [\"0.0.0.0/0\"]\n  }\n\n  ingress {\n    from_port   = 443\n    to_port     = 443\n    protocol    = \"tcp\"\n    cidr_blocks = [\"0.0.0.0/0\"]\n  }\n\n  egress {\n    from_port   = 0,\n    to_port     = 0,\n    protocol    = \"-1\",\n    cidr_blocks = [\"0.0.0.0/0\"]\n  }\n}",
+          "correct": true,
+          "explanation": "This snippet defines two distinct ingress rules for HTTP and HTTPS and includes an explicit egress rule that allows all outbound traffic."
+        },
+        {
+          "text": "",
+          "snippet": "resource \"aws_security_group\" \"web_sg\" {\n  name        = \"web_sg\"\n  description = \"Allow HTTP and HTTPS inbound\"\n  vpc_id      = var.vpc_id\n\n  ingress {\n    from_port   = 80,\n    to_port     = 443,\n    protocol    = \"tcp\",\n    cidr_blocks = [\"0.0.0.0/0\"]\n  }\n\n  egress {\n    from_port   = 0,\n    to_port     = 0,\n    protocol    = \"tcp\",\n    cidr_blocks = [\"0.0.0.0/0\"]\n  }\n}",
+          "correct": false,
+          "explanation": "Incorrect – Merges ports 80 and 443 into one ingress rule and restricts egress to TCP only."
+        },
+        {
+          "text": "",
+          "snippet": "resource \"aws_security_group\" \"web_sg\" {\n  name        = \"web_sg\"\n  description = \"Allow HTTP and HTTPS inbound\"\n  vpc_id      = var.vpc_id\n\n  ingress {\n    from_port   = 80,\n    to_port     = 80,\n    protocol    = \"tcp\",\n    cidr_blocks = [\"0.0.0.0/0\"]\n  }\n\n  ingress {\n    from_port   = 443,\n    to_port     = 443,\n    protocol    = \"tcp\",\n    cidr_blocks = [\"0.0.0.0/0\"]\n  }\n}",
+          "correct": false,
+          "explanation": "Incorrect – Does not include an explicit egress rule; relying on defaults is not best practice."
+        }
+      ]
+    }
+  ]
+}

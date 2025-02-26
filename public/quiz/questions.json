@@ -50,19 +50,19 @@
       "question": "Explain what a Terraform provider is and how you configure it for AWS.",
       "options": [
         {
-          "text": "A Terraform provider is a built‐in module that stores state remotely on AWS S3 and manages your variables.",
+          "text": "A plugin that manages remote state storage in AWS S3 and handles variable management. Can be used to manage multiple regions.",
           "snippet": "",
           "correct": false,
           "explanation": "Incorrect – This confuses providers with state backends."
         },
         {
-          "text": "A Terraform provider is a plugin that enables Terraform to interact with a service's API. For AWS, you configure it in a provider block—specifying parameters such as the region and credentials.",
+          "text": "A plugin that enables interaction with AWS services via their APIs, configured with region and credentials.",
           "snippet": "",
           "correct": true,
-          "explanation": ""
+          "explanation": "Correct – This accurately describes a provider's core function."
         },
         {
-          "text": "A Terraform provider is a command-line utility that you run separately to deploy resources, rather than integrating with Terraform's configuration.",
+          "text": "A separate CLI tool for deploying AWS resources independently of Terraform.",
           "snippet": "",
           "correct": false,
           "explanation": "Incorrect – This mischaracterizes how providers work."
@@ -70,49 +70,26 @@
       ]
     },
     {
-      "question": "Exercise 1: Given the snippet below, identify any issues and explain what each block does. Also, describe how you would modify it to support multiple regions using workspaces.",
-      "snippet": "provider \"aws\" {\n  region = var.aws_region\n}\n\nresource \"aws_instance\" \"web\" {\n  ami           = var.ami_id\n  instance_type = \"t2.micro\"\n  tags = {\n    Name = \"WebServer\"\n  }\n}",
+      "question": "Given this EC2 instance configuration, how would you make it terraform workspace-safe when both workspaces are in the same AWS account?",
+      "snippet": "resource \"aws_instance\" \"web\" {\n  ami           = \"ami-123456\"\n  instance_type = \"t2.micro\"\n  tags = {\n    Name = \"web-server\"\n  }\n}",
       "options": [
         {
-          "text": "The snippet is valid and uses a variable for the region; however, it doesn't address multi-region support. You'd need to duplicate resource blocks for each region.",
-          "snippet": "",
-          "correct": false,
-          "explanation": "Incorrect – Duplication is not best practice when workspaces can be used."
-        },
-        {
-          "text": "The snippet should include a `profile` attribute to set credentials for each region, hardcoding the region value per workspace.",
-          "snippet": "",
-          "correct": false,
-          "explanation": "Incorrect – Hardcoding contradicts the use of variables and workspaces."
-        },
-        {
-          "text": "The snippet is valid: the provider block sets the AWS region using a variable, and the resource block creates an EC2 instance with the given AMI and type. To support multiple regions, you can leverage Terraform workspaces (or variable overrides) so that each workspace provides a different value for `var.aws_region` without changing the code.",
-          "snippet": "",
+          "text": "Add workspace name to resource names and tags to prevent conflicts between workspaces",
+          "snippet": "resource \"aws_instance\" \"web\" {\n  ami           = \"ami-123456\"\n  instance_type = \"t2.micro\"\n  tags = {\n    Name = \"${terraform.workspace}-web-server\"\n  }\n}",
           "correct": true,
-          "explanation": ""
-        }
-      ]
-    },
-    {
-      "question": "How do variables and outputs facilitate Terraform configurations in multi-environment setups? What are some best practices for managing Terraform state securely in a team setting?",
-      "options": [
-        {
-          "text": "Variables let you parameterize configurations for different environments, and outputs can pass information between modules. However, it's best to manage state using local files since they're simpler in a team setting.",
-          "snippet": "",
-          "correct": false,
-          "explanation": "Incorrect – Local state files are risky in collaborative environments."
+          "explanation": "Correct - This ensures unique resource names across workspaces while keeping the configuration DRY"
         },
         {
-          "text": "Variables allow you to tailor configurations per environment, and outputs export computed values for use in other modules. For secure state management in teams, using remote backends with locking (e.g., S3 with DynamoDB) is the best practice.",
-          "snippet": "",
-          "correct": true,
-          "explanation": ""
+          "text": "Create separate configuration files for each workspace",
+          "snippet": "# dev/main.tf\nresource \"aws_instance\" \"web\" {\n  ami           = \"ami-123456\"\n  instance_type = \"t2.micro\"\n  tags = {\n    Name = \"dev-web-server\"\n  }\n}\n\n# prod/main.tf\nresource \"aws_instance\" \"web\" {\n  ami           = \"ami-123456\"\n  instance_type = \"t2.micro\"\n  tags = {\n    Name = \"prod-web-server\"\n  }\n}",
+          "correct": false,
+          "explanation": "Incorrect - This leads to code duplication and maintenance overhead"
         },
         {
-          "text": "Variables are used to hardcode configuration values, and outputs store secrets to be manually shared between environments; state should ideally be stored in a Git repository.",
-          "snippet": "",
+          "text": "Use count and conditionals to create resources only in specific workspaces, with complex workspace-specific logic to handle resource naming, tagging, and other configurations that need to be unique per workspace while maintaining the ability to share common configurations across workspaces when needed",
+          "snippet": "resource \"aws_instance\" \"web\" {\n  count = terraform.workspace = \"prod\" ? 1 : 0\n  ami           = \"ami-123456\"\n  instance_type = terraform.workspace == \"prod\" ? \"t2.medium\" : \"t2.micro\"\n  tags = {\n    Name = terraform.workspace == \"prod\" ? \"production-web-server\" : \"dev-web-server\"\n    Environment = upper(terraform.workspace)\n    ManagedBy = \"terraform-${terraform.workspace}\"\n  }\n  lifecycle {\n    create_before_destroy = terraform.workspace == \"prod\" ? true : false\n  }\n}",
           "correct": false,
-          "explanation": "Incorrect – Hardcoding and storing state in Git are both discouraged."
+          "explanation": "Incorrect - Contains a syntax error in the count expression that would cause the configuration to fail"
         }
       ]
     },
@@ -120,91 +97,22 @@
       "question": "Exercise 2 (Part A): How does using `count` affect resource creation?",
       "options": [
         {
-          "text": "Using `count` duplicates the configuration but does not actually create multiple instances.",
+          "text": "Creates configuration copies without actual resource instances.",
           "snippet": "",
           "correct": false,
           "explanation": "Incorrect – It does create the specified number of instances."
         },
         {
-          "text": "Using `count` creates multiple instances based on the value of `instance_count`, resulting in a list of resource objects.",
+          "text": "Creates multiple resource instances based on count value.",
           "snippet": "",
           "correct": true,
-          "explanation": ""
+          "explanation": "Correct – This accurately describes count's function."
         },
         {
-          "text": "Using `count` always creates a single resource regardless of the variable's value.",
+          "text": "Always creates one resource regardless of count value.",
           "snippet": "",
           "correct": false,
-          "explanation": "Incorrect – That contradicts the purpose of `count`."
-        }
-      ]
-    },
-    {
-      "question": "Exercise 2 (Part B): What improvements or changes might you suggest for production use, especially regarding state locking and remote state storage?",
-      "options": [
-        {
-          "text": "Keep state files on local disks for faster access.",
-          "snippet": "",
-          "correct": false,
-          "explanation": "Incorrect – Local state can lead to conflicts in team environments."
-        },
-        {
-          "text": "Avoid using variables for state management and hardcode the state file's path to reduce errors.",
-          "snippet": "",
-          "correct": false,
-          "explanation": "Incorrect – Hardcoding state paths is inflexible and error-prone."
-        },
-        {
-          "text": "Use remote backends (such as S3 with DynamoDB for state locking) to securely manage state and prevent concurrent modifications in a collaborative team setting.",
-          "snippet": "",
-          "correct": true,
-          "explanation": ""
-        }
-      ]
-    },
-    {
-      "question": "Exercise 3: Outline a basic module structure for a common infrastructure component (e.g., a VPC with subnets, route tables, and NAT gateways) and explain how you would version and reuse it.",
-      "options": [
-        {
-          "text": "A module can be a single file that contains all resource definitions; no folder structure or versioning is needed if you keep your configurations simple.",
-          "snippet": "",
-          "correct": false,
-          "explanation": "Incorrect – Modularity and versioning improve reusability and maintainability."
-        },
-        {
-          "text": "A module should be organized in its own directory with separate files—such as `main.tf` for resources, `variables.tf` for inputs, and `outputs.tf` for outputs. You can version the module using your version control system (e.g., tagging releases) and reference it via a source URL with a version tag.",
-          "snippet": "",
-          "correct": true,
-          "explanation": ""
-        },
-        {
-          "text": "A module should contain only outputs, with all resource definitions maintained in the root configuration; versioning is unnecessary because modules are inherently static.",
-          "snippet": "",
-          "correct": false,
-          "explanation": "Incorrect – This approach does not leverage modular design or proper version control."
-        }
-      ]
-    },
-    {
-      "question": "Discuss the role of dynamic blocks in Terraform. How do they improve code reusability and readability?",
-      "options": [
-        {
-          "text": "Dynamic blocks are merely a shortcut to copy and paste static configuration blocks and offer little flexibility in handling complex inputs.",
-          "snippet": "",
-          "correct": false,
-          "explanation": "Incorrect – They provide significant benefits in dynamic configuration."
-        },
-        {
-          "text": "Dynamic blocks allow you to generate nested configuration blocks dynamically based on variable input. This approach reduces duplication and improves maintainability by handling a variable number of similar configuration blocks without writing them out manually.",
-          "snippet": "",
-          "correct": true,
-          "explanation": ""
-        },
-        {
-          "text": "Dynamic blocks automatically adjust resource configurations in response to provider updates, eliminating the need for manual modifications when APIs change.",
-          "snippet": "",
-          "correct": false,
-          "explanation": "Incorrect – They don't automatically adapt to provider changes."
+          "explanation": "Incorrect – That contradicts the purpose of count."
         }
       ]
     },
@@ -303,7 +211,8 @@
       ]
     },
     {
-      "question": "Exercise 7: Given the error snippet below, what steps would you take to diagnose and resolve the issue?\n\n```\nError: Error launching source instance: UnauthorizedOperation: You are not authorized to perform this operation.\n```",
+      "question": "Exercise 7: Given the error snippet below, what steps would you take to diagnose and resolve the issue?",
+      "snippet": "Error launching source instance: UnauthorizedOperation: You are not authorized to perform this operation.",
       "options": [
         {
           "text": "Restart the AWS instance and try running Terraform again, hoping the issue resolves itself.",

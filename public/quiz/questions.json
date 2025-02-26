@@ -24,29 +24,6 @@
       ]
     },
     {
-      "question": "How do you reference a variable in a Terraform configuration?",
-      "options": [
-        {
-          "text": "Using var.variable_name",
-          "snippet": "resource \"aws_instance\" \"example\" {\n  instance_type = var.instance_type\n}",
-          "correct": true,
-          "explanation": "This is correct. Variables are referenced using the 'var.' prefix followed by the variable name."
-        },
-        {
-          "text": "Using ${variable_name}",
-          "snippet": "resource \"aws_instance\" \"example\" {\n  instance_type = ${instance_type}\n}",
-          "correct": false,
-          "explanation": "This is incorrect. This syntax is not valid in Terraform."
-        },
-        {
-          "text": "Using variable.name",
-          "snippet": "resource \"aws_instance\" \"example\" {\n  instance_type = variable.instance_type\n}",
-          "correct": false,
-          "explanation": "This is incorrect. 'variable.' is not the correct prefix for referencing variables."
-        }
-      ]
-    },
-    {
       "question": "Explain what a Terraform provider is and how you configure it for AWS.",
       "options": [
         {
@@ -75,7 +52,7 @@
       "options": [
         {
           "text": "Add workspace name to resource names and tags to prevent conflicts between workspaces",
-          "snippet": "resource \"aws_instance\" \"web\" {\n  ami           = \"ami-123456\"\n  instance_type = \"t2.micro\"\n  tags = {\n    Name = \"${terraform.workspace}-web-server\"\n  }\n}",
+          "snippet": "resource \"aws_instance\" \"web1\" {\n  ami           = \"ami-123456\"\n  instance_type = \"t2.micro\"\n  tags = {\n    Name = \"${terraform.workspace}-web-server\"\n  }\n}",
           "correct": true,
           "explanation": "Correct - This ensures unique resource names across workspaces while keeping the configuration DRY"
         },
@@ -234,7 +211,7 @@
       ]
     },
     {
-      "question": "ECS Task Definition for a Fargate Container: You need to define an ECS task definition for a containerized application to run on Fargate. The task must specify a container definition with an image, CPU, memory settings, and a port mapping. Which snippet is correct?",
+      "question": "You need to define an ECS task definition for a containerized application to run correctly on Fargate. The task must specify a container definition with an image, CPU, memory settings, and a port mapping. Which snippet is correct?",
       "options": [
         {
           "text": "",
@@ -250,9 +227,9 @@
         },
         {
           "text": "",
-          "snippet": "resource \"aws_ecs_task_definition\" \"task\" {\n  family                   = \"my-task\"\n  network_mode             = \"awsvpc\"\n  requires_compatibilities = [\"FARGATE\"]\n  cpu                      = \"512\"\n  memory                   = \"1024\"\n\n  container_definitions = jsonencode([\n    {\n      name      = \"app\"\n      image     = var.image\n      cpu       = 256\n      memoryReservation = 512\n      essential = true\n      portMappings = [\n        {\n          containerPort = 8080,\n          hostPort      = 8080,\n          protocol      = \"tcp\"\n        }\n      ]\n    }\n  ])\n}",
+          "snippet": "resource \"aws_ecs_task_definition\" \"task\" {\n  family                   = \"my-task\"\n  network_mode             = \"awsvpc\"\n  requires_compatibilities = [\"FARGATE\"]\n  cpu                      = \"512\"\n  memory                   = \"1024\"\n\n  container_definitions = jsonencode([\n    {\n      name      = \"app\"\n      image     = var.image\n      cpu       = 256\n      memoryReservation = 512\n      essential = true\n      portMappings = [\n        {\n          containerPort = 8080,\n          hostPort      = 80,\n          protocol      = \"tcp\"\n        }\n      ]\n    }\n  ])\n}",
           "correct": false,
-          "explanation": "Incorrect – Inconsistent CPU/memory values and an unexpected port mapping."
+          "explanation": "Incorrect – The containerPort and hostPort mismatch will cause port binding issues in Fargate."
         }
       ]
     },
@@ -299,6 +276,75 @@
           "snippet": "resource \"aws_security_group\" \"web_sg\" {\n  name        = \"web_sg\"\n  description = \"Allow HTTP and HTTPS inbound\"\n  vpc_id      = var.vpc_id\n\n  ingress {\n    from_port   = 80,\n    to_port     = 80,\n    protocol    = \"tcp\",\n    cidr_blocks = [\"0.0.0.0/0\"]\n  }\n\n  ingress {\n    from_port   = 443,\n    to_port     = 443,\n    protocol    = \"tcp\",\n    cidr_blocks = [\"0.0.0.0/0\"]\n  }\n}",
           "correct": false,
           "explanation": "Incorrect – Does not include an explicit egress rule; relying on defaults is not best practice."
+        }
+      ]
+    },
+    {
+      "question": "In a multi-region AWS architecture using Route53 latency-based routing, you notice intermittent routing inconsistencies. Users from the same geographic location are being directed to different regions at different times. What could be the root cause and how would you diagnose it?",
+      "options": [
+        {
+          "text": "The issue stems from dynamic internet routing paths affecting latency measurements. Monitor Route53 Traffic Flow logs and implement geolocation constraints.",
+          "snippet": "",
+          "correct": true,
+          "explanation": "This correctly identifies that internet routing dynamics can cause latency variations and provides a practical monitoring approach."
+        },
+        {
+          "text": "The issue is likely caused by DNS caching at the client level, and the solution is to reduce the TTL values in Route53 while implementing a complex multi-layer caching strategy with CloudFront distributions in each region to ensure consistent routing patterns based on geographic location.",
+          "snippet": "",
+          "correct": false,
+          "explanation": "While DNS caching can affect routing, this solution is overly complex and doesn't address the core issue of latency-based routing inconsistencies."
+        },
+        {
+          "text": "The problem is related to Route53's health checks being too sensitive. Implement custom health check logic with increased thresholds and add sophisticated failback mechanisms to ensure consistent routing across regions.",
+          "snippet": "",
+          "correct": false,
+          "explanation": "Health checks primarily affect failover routing, not latency-based routing. This solution misidentifies the root cause."
+        }
+      ]
+    },
+    {
+      "question": "You're implementing a zero-trust architecture in AWS. Your application uses ECS Fargate tasks that need to securely access AWS services and a third-party API. The third-party API requires mutual TLS authentication. How would you implement this securely?",
+      "options": [
+        {
+          "text": "Implement a certificate rotation system using multiple sidecar containers, with primary and backup certificate chains, automated health checks, and fallback mechanisms for certificate access.",
+          "snippet": "",
+          "correct": false,
+          "explanation": "This solution is unnecessarily complex and introduces potential security risks through multiple storage locations."
+        },
+        {
+          "text": "Store certificates in environment variables with a sophisticated encryption scheme that includes multiple layers of encoding and runtime decryption, managed by a dedicated secrets management service with automated key rotation.",
+          "snippet": "",
+          "correct": false,
+          "explanation": "Using environment variables for certificates is not secure, and the additional complexity doesn't improve security."
+        },
+        {
+          "text": "Use IAM roles and mount certificates from EFS with encryption. Use a sidecar container to manage certificate rotation and health checks.",
+          "snippet": "",
+          "correct": true,
+          "explanation": "This solution correctly implements secure certificate storage with proper encryption and access controls."
+        }
+      ]
+    },
+    {
+      "question": "You're designing a multi-region active-active architecture using DynamoDB global tables with custom conflict resolution. During testing, you notice that some write conflicts are not being resolved as expected. What's the best solution?",
+      "options": [
+        {
+          "text": "Implement a timestamp-based resolution system with multiple fallback strategies, including server-side timestamps, client-side timestamps, and a distributed clock synchronization service to ensure consistent time tracking across all regions.",
+          "snippet": "{\n  \"pk\": \"user#123\",\n  \"timestamp\": {\n    \"server\": \"2024-01-20T10:15:30.123Z\",\n    \"client\": \"2024-01-20T10:15:29.987Z\",\n    \"sync\": \"2024-01-20T10:15:30.000Z\"\n  },\n  \"data\": { \"name\": \"John\" }\n}",
+          "correct": false,
+          "explanation": "This approach is overly complex and doesn't effectively address causality tracking in distributed systems."
+        },
+        {
+          "text": "Use version vectors with region-specific counters.",
+          "snippet": "{\n  \"pk\": \"user#123\",\n  \"version\": {\n    \"us-east-1\": 5,\n    \"eu-west-1\": 3\n  },\n  \"data\": { \"name\": \"John\" }\n}",
+          "correct": true,
+          "explanation": "Version vectors provide a simple but effective way to track and resolve conflicts across regions."
+        },
+        {
+          "text": "Create a conflict resolution pipeline using Lambda functions in each region to detect and resolve conflicts using custom merge strategies, with additional metadata tracking and automated conflict resolution reporting.",
+          "snippet": "// Lambda function for conflict resolution\nexports.handler = async (event) => {\n  const conflictItem = event.Records[0].dynamodb;\n  const mergeStrategy = {\n    region: process.env.AWS_REGION,\n    timestamp: Date.now(),\n    metadata: {\n      conflictType: 'UPDATE',\n      resolutionPriority: 'HIGH'\n    }\n  };\n  // Complex merge logic here\n  return { resolved: true };\n};",
+          "correct": false,
+          "explanation": "This solution adds unnecessary complexity and potential points of failure in the conflict resolution process."
         }
       ]
     }
